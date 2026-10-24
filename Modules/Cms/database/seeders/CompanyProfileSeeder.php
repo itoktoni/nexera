@@ -160,6 +160,7 @@ class CompanyProfileSeeder extends Seeder
                     ['name' => 'category', 'label' => 'Kategori', 'type' => 'select', 'sort_order' => 1, 'config' => ['options' => ['rfid' => 'Sistem RFID', 'app' => 'Aplikasi Khusus']]],
                     ['name' => 'badge', 'label' => 'Badge (industri)', 'type' => 'text', 'sort_order' => 2],
                     ['name' => 'icon', 'label' => 'Icon (Font Awesome class)', 'type' => 'text', 'sort_order' => 3],
+                    ['name' => 'image', 'label' => 'Gambar / Foto Implementasi', 'type' => 'image', 'sort_order' => 7],
                     ['name' => 'client', 'label' => 'Klien', 'type' => 'text', 'sort_order' => 4],
                     ['name' => 'subtitle', 'label' => 'Sub Judul', 'type' => 'text', 'sort_order' => 5],
                     ['name' => 'description', 'label' => 'Deskripsi', 'type' => 'textarea', 'sort_order' => 6],
