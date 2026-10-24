@@ -1,5 +1,6 @@
 @php
     // Data shape: meta['products'] = heading, subheading, items[{category: hardware|media, icon, title, description}]
+    // "icon" holds an uploaded image path/URL (field type=image); old FA classes still render as fallback.
     $s = $data['products'] ?? $data;
     $heading = $s['heading'] ?? 'Eksplorasi Perangkat Kami';
     $subheading = $s['subheading'] ?? 'Beragam hardware dan media supply industri dari merek terkemuka yang siap mendukung efisiensi operasional.';
@@ -7,6 +8,7 @@
     $hardware = collect($items)->where('category', 'hardware')->values();
     $media = collect($items)->where('category', 'media')->values();
     if ($hardware->isEmpty() && $media->isEmpty()) { $hardware = collect($items); }
+    $isImage = fn($v) => is_string($v) && $v !== '' && (str_starts_with(trim($v), 'http') || str_contains($v, '/') || (bool) preg_match('/\.(png|jpe?g|webp|gif|svg|avif)(\?.*)?$/i', trim($v)));
 @endphp
 <section id="produk" class="py-24 bg-slate-100">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -27,8 +29,12 @@
         <div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="grid-hardware">
             @forelse($hardware as $p)
                 <div class="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all border border-slate-200 group flex flex-col h-full">
-                    <div class="h-48 bg-slate-50 p-6 flex justify-center items-center group-hover:bg-slate-100 transition-colors">
-                        <i class="{{ $p['icon'] ?? 'fas fa-box' }} text-6xl text-slate-300 group-hover:text-brand-primary transition-colors"></i>
+                    <div class="h-48 bg-slate-50 p-6 flex justify-center items-center group-hover:bg-slate-100 transition-colors overflow-hidden">
+                        @if($isImage($p['icon'] ?? ''))
+                            <img src="{{ fileUrl($p['icon']) }}" alt="{{ $p['title'] ?? 'Produk' }}" class="w-full h-full object-cover rounded-lg" loading="lazy">
+                        @else
+                            <i class="{{ $p['icon'] ?? 'fas fa-box' }} text-6xl text-slate-300 group-hover:text-brand-primary transition-colors"></i>
+                        @endif
                     </div>
                     <div class="p-6 flex-grow flex flex-col">
                         <h3 class="text-lg font-bold text-slate-900 mb-1">{{ $p['title'] ?? '' }}</h3>
@@ -46,8 +52,12 @@
         <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 hidden" id="grid-media">
             @foreach($media as $p)
                 <div class="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all border border-slate-200 group flex flex-col h-full">
-                    <div class="h-48 bg-slate-50 p-6 flex justify-center items-center group-hover:bg-slate-100 transition-colors">
-                        <i class="{{ $p['icon'] ?? 'fas fa-box' }} text-6xl text-slate-300 group-hover:text-brand-accent transition-colors"></i>
+                    <div class="h-48 bg-slate-50 p-6 flex justify-center items-center group-hover:bg-slate-100 transition-colors overflow-hidden">
+                        @if($isImage($p['icon'] ?? ''))
+                            <img src="{{ fileUrl($p['icon']) }}" alt="{{ $p['title'] ?? 'Produk' }}" class="w-full h-full object-cover rounded-lg" loading="lazy">
+                        @else
+                            <i class="{{ $p['icon'] ?? 'fas fa-box' }} text-6xl text-slate-300 group-hover:text-brand-accent transition-colors"></i>
+                        @endif
                     </div>
                     <div class="p-6 flex-grow flex flex-col">
                         <h3 class="text-lg font-bold text-slate-900 mb-1">{{ $p['title'] ?? '' }}</h3>

@@ -94,16 +94,17 @@ class CompanyProfileSeeder extends Seeder
                 ['name' => 'title_suffix', 'label' => 'Judul (sesudah highlight)', 'type' => 'text', 'sort_order' => 4],
                 ['name' => 'description', 'label' => 'Deskripsi', 'type' => 'textarea', 'sort_order' => 5],
                 ['name' => 'cta1_text', 'label' => 'Tombol 1 Teks', 'type' => 'text', 'sort_order' => 6],
-                ['name' => 'cta1_link', 'label' => 'Tombol 1 Link', 'type' => 'url', 'sort_order' => 7],
+                ['name' => 'cta1_link', 'label' => 'Tombol 1 Link', 'type' => 'text', 'sort_order' => 7],
                 ['name' => 'cta2_text', 'label' => 'Tombol 2 Teks', 'type' => 'text', 'sort_order' => 8],
-                ['name' => 'cta2_link', 'label' => 'Tombol 2 Link', 'type' => 'url', 'sort_order' => 9],
+                ['name' => 'cta2_link', 'label' => 'Tombol 2 Link', 'type' => 'text', 'sort_order' => 9],
             ]],
 
             ['name' => 'clients', 'label' => 'Klien', 'type' => 'container', 'mode' => 'single', 'sort_order' => 20, 'children' => [
                 ['name' => 'heading', 'label' => 'Judul Section', 'type' => 'text', 'sort_order' => 1],
                 ['name' => 'items', 'label' => 'Daftar Klien', 'type' => 'container', 'mode' => 'multiple', 'sort_order' => 2, 'children' => [
                     ['name' => 'name', 'label' => 'Nama', 'type' => 'text', 'sort_order' => 1],
-                    ['name' => 'icon', 'label' => 'Icon (Font Awesome class)', 'type' => 'text', 'sort_order' => 2],
+                    // shortcut: key tetap "icon" agar meta lama terbaca, tapi tipe image agar admin upload logo bukan isi FA class.
+                    ['name' => 'icon', 'label' => 'Logo (upload gambar)', 'type' => 'image', 'sort_order' => 2],
                 ]],
             ]],
 
@@ -135,7 +136,7 @@ class CompanyProfileSeeder extends Seeder
                     ['name' => 'description', 'label' => 'Deskripsi', 'type' => 'textarea', 'sort_order' => 3],
                     ['name' => 'features', 'label' => 'Fitur (satu per baris)', 'type' => 'textarea', 'sort_order' => 4],
                     ['name' => 'button_text', 'label' => 'Tombol Teks', 'type' => 'text', 'sort_order' => 5],
-                    ['name' => 'button_link', 'label' => 'Tombol Link', 'type' => 'url', 'sort_order' => 6],
+                    ['name' => 'button_link', 'label' => 'Tombol Link', 'type' => 'text', 'sort_order' => 6],
                     ['name' => 'highlight', 'label' => 'Sorot (kartu gelap)', 'type' => 'boolean', 'sort_order' => 7],
                 ]],
             ]],
@@ -145,7 +146,8 @@ class CompanyProfileSeeder extends Seeder
                 ['name' => 'subheading', 'label' => 'Subjudul', 'type' => 'textarea', 'sort_order' => 2],
                 ['name' => 'items', 'label' => 'Daftar Produk', 'type' => 'container', 'mode' => 'multiple', 'sort_order' => 3, 'children' => [
                     ['name' => 'category', 'label' => 'Kategori', 'type' => 'select', 'sort_order' => 1, 'config' => ['options' => ['hardware' => 'Perangkat Keras', 'media' => 'Media Supply']]],
-                    ['name' => 'icon', 'label' => 'Icon (Font Awesome class)', 'type' => 'text', 'sort_order' => 2],
+                    // shortcut: key tetap "icon" agar meta lama terbaca, tapi tipe image agar admin upload gambar bukan isi FA class.
+                    ['name' => 'icon', 'label' => 'Gambar Produk (upload)', 'type' => 'image', 'sort_order' => 2],
                     ['name' => 'title', 'label' => 'Judul', 'type' => 'text', 'sort_order' => 3],
                     ['name' => 'description', 'label' => 'Deskripsi', 'type' => 'textarea', 'sort_order' => 4],
                 ]],
@@ -162,7 +164,7 @@ class CompanyProfileSeeder extends Seeder
                     ['name' => 'subtitle', 'label' => 'Sub Judul', 'type' => 'text', 'sort_order' => 5],
                     ['name' => 'description', 'label' => 'Deskripsi', 'type' => 'textarea', 'sort_order' => 6],
                 ]],
-                ['name' => 'success', 'label' => 'Success Story', 'type' => 'container', 'mode' => 'single', 'sort_order' => 4, 'children' => [
+                ['name' => 'success', 'label' => 'Success Story (carousel — tambah beberapa)', 'type' => 'container', 'mode' => 'multiple', 'sort_order' => 4, 'children' => [
                     ['name' => 'quote', 'label' => 'Kutipan', 'type' => 'textarea', 'sort_order' => 1],
                     ['name' => 'author', 'label' => 'Penulis', 'type' => 'text', 'sort_order' => 2],
                     ['name' => 'role', 'label' => 'Peran / Instansi', 'type' => 'text', 'sort_order' => 3],
@@ -178,12 +180,12 @@ class CompanyProfileSeeder extends Seeder
                     ['name' => 'label', 'label' => 'Label (cth: WhatsApp - Jakarta)', 'type' => 'text', 'sort_order' => 1],
                     ['name' => 'name', 'label' => 'Nama Kontak', 'type' => 'text', 'sort_order' => 2],
                     ['name' => 'phone', 'label' => 'Nomor Tampilan', 'type' => 'text', 'sort_order' => 3],
-                    ['name' => 'wa_link', 'label' => 'Link WhatsApp', 'type' => 'url', 'sort_order' => 4],
+                    ['name' => 'wa_link', 'label' => 'Link WhatsApp', 'type' => 'text', 'sort_order' => 4],
                     ['name' => 'icon', 'label' => 'Icon (Font Awesome class)', 'type' => 'text', 'sort_order' => 5],
                 ]],
                 ['name' => 'email_label', 'label' => 'Label Email', 'type' => 'text', 'sort_order' => 4],
                 ['name' => 'email', 'label' => 'Alamat Email Tampilan', 'type' => 'text', 'sort_order' => 5],
-                ['name' => 'email_link', 'label' => 'Link Email (mailto:)', 'type' => 'url', 'sort_order' => 6],
+                ['name' => 'email_link', 'label' => 'Link Email (mailto:)', 'type' => 'text', 'sort_order' => 6],
             ]],
         ];
     }
@@ -343,11 +345,13 @@ class CompanyProfileSeeder extends Seeder
                     ],
                 ],
                 'success' => [
-                    'quote' => 'Implementasi Smart Laundry System dengan teknologi UHF RFID dari Nexera telah memangkas waktu inventarisasi linen kami hingga 80% dan mengeliminasi kesalahan hitung manual yang sering terjadi.',
-                    'author' => 'Manajer Operasional',
-                    'role' => 'Obsesiman Laundry',
-                    'metric' => '80%',
-                    'metric_label' => 'Waktu inventarisasi lebih hemat',
+                    [
+                        'quote' => 'Implementasi Smart Laundry System dengan teknologi UHF RFID dari Nexera telah memangkas waktu inventarisasi linen kami hingga 80% dan mengeliminasi kesalahan hitung manual yang sering terjadi.',
+                        'author' => 'Manajer Operasional',
+                        'role' => 'Obsesiman Laundry',
+                        'metric' => '80%',
+                        'metric_label' => 'Waktu inventarisasi lebih hemat',
+                    ],
                 ],
             ],
             'contact' => [

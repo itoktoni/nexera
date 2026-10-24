@@ -1,10 +1,15 @@
 @php
-    // Data shape: meta['portfolio'] = heading, subheading, items[{category: rfid|app, badge, icon, image, client, subtitle, description}], success{quote, author, role, metric, metric_label}
+    // Data shape: meta['portfolio'] = heading, subheading, items[{category: rfid|app, badge, icon, image, client, subtitle, description}], success[{quote, author, role, metric, metric_label}] (carousel; single assoc legacy wrapped)
     $s = $data['portfolio'] ?? $data;
     $heading = $s['heading'] ?? 'Portofolio & Implementasi';
     $subheading = $s['subheading'] ?? 'Kepercayaan klien besar adalah bukti komitmen kami dalam memberikan solusi nyata.';
     $items = $s['items'] ?? (array_is_list($s) ? $s : []);
-    $success = $s['success'] ?? [];
+    $successRaw = $s['success'] ?? [];
+    $stories = [];
+    if (!empty($successRaw)) {
+        $stories = array_is_list($successRaw) ? array_values($successRaw) : [$successRaw];
+        $stories = array_values(array_filter($stories, fn($st) => is_array($st) && !empty($st['quote'])));
+    }
 @endphp
 <section id="portofolio" class="py-24 bg-white relative">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -52,32 +57,107 @@
             </div>
         @endif
 
-        @if(!empty($success))
-            <div class="mt-16 bg-slate-900 rounded-3xl p-8 md:p-12 text-white shadow-2xl relative overflow-hidden border border-slate-800">
-                <div class="absolute -right-20 -bottom-20 opacity-10">
+        @if(!empty($stories))
+            <div id="success-carousel" class="mt-16 bg-slate-900 rounded-3xl p-8 md:p-12 text-white shadow-2xl relative overflow-hidden border border-slate-800">
+                <div class="absolute -right-20 -bottom-20 opacity-10 pointer-events-none">
                     <i class="fas fa-quote-right text-[250px]"></i>
                 </div>
-                <div class="relative z-10 max-w-4xl">
+                <div class="relative z-10">
                     <div class="flex items-center gap-2 text-brand-accent font-bold mb-6">
                         <i class="fas fa-star"></i> SUCCESS STORY HIGHLIGHT
                     </div>
-                    <p class="text-xl md:text-2xl font-light italic mb-8 leading-relaxed">
-                        "{{ $success['quote'] ?? '' }}"
-                        @if(!empty($success['metric']))
-                            <span class="font-bold text-brand-accent">{{ $success['metric'] }}</span>
-                        @endif
-                    </p>
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 bg-slate-700 rounded-full flex items-center justify-center text-xl">
-                            <i class="fas fa-user text-slate-400"></i>
-                        </div>
-                        <div>
-                            <p class="font-bold">{{ $success['author'] ?? '' }}</p>
-                            <p class="text-sm text-slate-400">{{ $success['role'] ?? '' }}</p>
-                        </div>
+                    <div class="grid">
+                        @foreach($stories as $i => $st)
+                            <div class="success-slide col-start-1 row-start-1 transition-opacity duration-500 {{ $i === 0 ? 'opacity-100' : 'opacity-0 pointer-events-none' }}" data-slide="{{ $i }}">
+                                <div class="grid md:grid-cols-[1fr_auto] gap-8 items-center">
+                                    <div>
+                                        <p class="text-xl md:text-2xl font-light italic mb-8 leading-relaxed">"{{ $st['quote'] ?? '' }}"</p>
+                                        <div class="flex items-center gap-4">
+                                            <div class="w-12 h-12 bg-slate-700 rounded-full flex items-center justify-center text-xl shrink-0">
+                                                <i class="fas fa-user text-slate-400"></i>
+                                            </div>
+                                            <div>
+                                                <p class="font-bold">{{ $st['author'] ?? '' }}</p>
+                                                <p class="text-sm text-slate-400">{{ $st['role'] ?? '' }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @if(!empty($st['metric']))
+                                        <div class="text-center md:text-right md:pr-4 shrink-0">
+                                            <p class="text-5xl md:text-6xl font-extrabold text-brand-accent">{{ $st['metric'] }}</p>
+                                            @if(!empty($st['metric_label']))
+                                                <p class="text-sm text-slate-300 mt-2 max-w-[180px]">{{ $st['metric_label'] }}</p>
+                                            @endif
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        @endforeach
                     </div>
+                    @if(count($stories) > 1)
+                        <div class="flex items-center justify-between mt-8">
+                            <div class="flex gap-2">
+                                @foreach($stories as $i => $st)
+                                    <button type="button" class="success-dot w-2.5 h-2.5 rounded-full transition-colors {{ $i === 0 ? 'bg-brand-accent' : 'bg-slate-600 hover:bg-slate-400' }}" data-goto="{{ $i }}" aria-label="Story {{ $i + 1 }}"></button>
+                                @endforeach
+                            </div>
+                            <div class="flex gap-2">
+                                <button type="button" onclick="successCarouselMove(-1)" aria-label="Sebelumnya" class="w-10 h-10 rounded-full border border-slate-600 flex items-center justify-center hover:bg-slate-700 transition-colors">
+                                    <i class="fas fa-chevron-left text-sm"></i>
+                                </button>
+                                <button type="button" onclick="successCarouselMove(1)" aria-label="Berikutnya" class="w-10 h-10 rounded-full border border-slate-600 flex items-center justify-center hover:bg-slate-700 transition-colors">
+                                    <i class="fas fa-chevron-right text-sm"></i>
+                                </button>
+                            </div>
+                        </div>
+                    @endif
                 </div>
             </div>
+            @if(count($stories) > 1)
+            <script>
+                (function() {
+                    if (window.__successCarouselInit) return;
+                    window.__successCarouselInit = true;
+                    var idx = 0, timer = null;
+                    function show(n) {
+                        var slides = document.querySelectorAll('#success-carousel .success-slide');
+                        var dots = document.querySelectorAll('#success-carousel .success-dot');
+                        if (!slides.length) return;
+                        idx = (n + slides.length) % slides.length;
+                        slides.forEach(function(s, i) {
+                            var on = i === idx;
+                            s.classList.toggle('opacity-100', on);
+                            s.classList.toggle('opacity-0', !on);
+                            s.classList.toggle('pointer-events-none', !on);
+                        });
+                        dots.forEach(function(d, i) {
+                            d.classList.toggle('bg-brand-accent', i === idx);
+                            d.classList.toggle('bg-slate-600', i !== idx);
+                        });
+                    }
+                    window.successCarouselMove = function(step) {
+                        show(idx + step);
+                        restart();
+                    };
+                    document.querySelectorAll('#success-carousel .success-dot').forEach(function(d) {
+                        d.addEventListener('click', function() {
+                            show(parseInt(d.getAttribute('data-goto'), 10));
+                            restart();
+                        });
+                    });
+                    function restart() {
+                        if (timer) clearInterval(timer);
+                        timer = setInterval(function() { show(idx + 1); }, 6000);
+                    }
+                    var box = document.getElementById('success-carousel');
+                    if (box) {
+                        box.addEventListener('mouseenter', function() { if (timer) clearInterval(timer); });
+                        box.addEventListener('mouseleave', restart);
+                    }
+                    restart();
+                })();
+            </script>
+            @endif
         @endif
     </div>
 </section>
